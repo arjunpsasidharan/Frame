@@ -1,5 +1,6 @@
 package com.quastio.framelibrary.views
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -29,11 +30,7 @@ class MainActivity : AppCompatActivity(), PostListAdapter.Interaction {
         recycler_view.adapter = postListAdapter
         packLayoutManager = LinearLayoutManager(this)
         packLayoutManager.orientation = RecyclerView.VERTICAL
-        val dividerItemDecoration = DividerItemDecoration(
-            recycler_view.context,
-            packLayoutManager.orientation
-        )
-        recycler_view.addItemDecoration(dividerItemDecoration)
+
         recycler_view.layoutManager = packLayoutManager
 
         postListViewModel=ViewModelProvider(this).get(PostListViewModel::class.java)
@@ -65,6 +62,8 @@ class MainActivity : AppCompatActivity(), PostListAdapter.Interaction {
     }
 
     override fun onItemSelected(position: Int, item: Child) {
-        Toast.makeText(this,item.data.thumbnail,Toast.LENGTH_SHORT).show()
+        val  intent= Intent(this,FullscreenImageActivity::class.java)
+        intent.putExtra("url_extra",item.data.thumbnail)
+        startActivity(intent)
     }
 }
