@@ -1,6 +1,8 @@
 package com.quastio.framelibrary
 
 import android.content.ComponentCallbacks2
+import android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
+import android.content.ComponentCallbacks2.TRIM_MEMORY_MODERATE
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -11,6 +13,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import java.util.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 
 
 class Frame (context: Context) :ComponentCallbacks2 {
@@ -73,18 +77,19 @@ class Frame (context: Context) :ComponentCallbacks2 {
         CoroutineScope(IO+job).launch {
             val bitmap = checkImageInCache(imageUrl)
             bitmap?.let {
-                Log.e("frame","image exist in cache")
-                loadIntoImageView(imageView, it, imageUrl)
+                    loadIntoImageView(imageView, it, imageUrl)
+
+
             } ?: run {
-                Log.e("frame","image does not exist in cache")
 
                 imageLoader(imageUrl,imageView)
+
+
             }
         }
     }
 
     private suspend  fun loadIntoImageView(imageView: ImageView, bitmap: Bitmap?, imageUrl: String) {
-
         require(bitmap != null) {
             "Bitmap should not be null"
         }
@@ -128,12 +133,19 @@ class Frame (context: Context) :ComponentCallbacks2 {
 
 
     override fun onLowMemory() {
+
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
     }
 
     override fun onTrimMemory(level: Int) {
+        if (level >= TRIM_MEMORY_MODERATE) {
+            memoryCache.evictAll();
+        }
+        else if (level >= TRIM_MEMORY_BACKGROUND) {
+            memoryCache.trimToSize(memoryCache.size() / 2);
+        }
     }
 }
 

@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), PostListAdapter.Interaction {
             it?.let {
                 when(it){
                     is ResultWrapper.Success -> {
-                        val list=it.data
+                        val list=it.data as MutableList<Child>
                         if (list!=null&&list.isNotEmpty()){
                         if (this::postListAdapter.isInitialized){
                             postListAdapter.submitList(list)
