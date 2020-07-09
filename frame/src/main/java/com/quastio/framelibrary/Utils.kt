@@ -4,9 +4,11 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import android.os.Process
+import android.util.Log
 import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.lang.Exception
 import java.net.URL
 import java.util.concurrent.ThreadFactory
 
@@ -14,12 +16,17 @@ import java.util.concurrent.ThreadFactory
 object Utils {
     suspend fun downloadBitmapFromURL(imageUrl: String): Bitmap? {
         var bitmap:Bitmap?
+            try {
 
-            val url = URL(imageUrl)
-            val inputStream = BufferedInputStream(url.openConnection().getInputStream())
+                val url = URL(imageUrl)
+                val inputStream = BufferedInputStream(url.openConnection().getInputStream())
 
-            // Scale Bitmap to Screen Size to store in Cache
-            bitmap= scaleBitmap(inputStream, Frame.screenWidth, Frame.screenHeight)
+                // Scale Bitmap to Screen Size to store in Cache
+                bitmap = scaleBitmap(inputStream, Frame.screenWidth, Frame.screenHeight)
+            }catch (e:Exception){
+                bitmap=null
+                Log.e("Frame",e.message)
+            }
             return bitmap
 
 

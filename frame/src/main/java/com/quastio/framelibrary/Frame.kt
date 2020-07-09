@@ -123,11 +123,14 @@ class Frame (context: Context) :ComponentCallbacks2 {
         if(isReused(imgUrl,imageView)) return
 
         val bitmap = Utils.downloadBitmapFromURL(imgUrl)
-        memoryCache.put(imgUrl, bitmap)
+        bitmap?.let {
+            memoryCache.put(imgUrl, bitmap)
 
-        if(isReused(imgUrl, imageView)) return
 
-        displayBitmap(imgUrl,imageView)
+            if (isReused(imgUrl, imageView)) return
+
+            displayBitmap(imgUrl, imageView)
+        }
 
     }
 
